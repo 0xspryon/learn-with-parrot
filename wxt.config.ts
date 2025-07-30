@@ -16,8 +16,8 @@ export default defineConfig({
     description: "Learn with parrot helps you revise the vocabulary of a language by periodically showing it to you as you browse the web.",
     permissions: [
       "storage",
-      "tabs",
       "activeTab",
+      "notifications",
       "contextMenus",
     ],
     action: {
