@@ -1,8 +1,8 @@
 {
-  "name": "Learn with parrot",
+  "name": "Parrotly",
   "description": "Passively learn the vocabulary of a language while browsing the web.",
   "private": true,
-  "version": "0.0.5",
+  "version": "0.0.9",
   "type": "module",
   "scripts": {
     "dev": "wxt",

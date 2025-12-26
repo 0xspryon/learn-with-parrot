@@ -201,7 +201,7 @@
 {#if open}
   <div class="modal no-backdrop" role="dialog">
     <div class="modal-box max-w-sm absolute shadow" bind:this={wrapper}>
-      <h3 class="text-lg text-base-content font-bold">Learn with parrot</h3>
+      <h3 class="text-lg text-base-content font-bold">Parrotly</h3>
       <form class="contents" onsubmit={handleSubmit}>
         <div class="flex flex-col gap-3 pt-3">
           <fieldset class="fieldset">

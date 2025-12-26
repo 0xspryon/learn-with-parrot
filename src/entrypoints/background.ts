@@ -10,7 +10,7 @@ import { type DictionaryEntry, defaultDictionary } from '@/lib/entity/Dictionary
 import { type Settings, defaultSettings } from '@/lib/entity/Settings';
 
 export default defineBackground(() => {
-  // let environment = browser // || chrome;
+  let environment = browser || chrome;
   const contextMenuId = "learn-with-parrot-context-menu";
   const displayNextEntryMenuId = "display-next-entry-menu";
   let dictionary: Array<DictionaryEntry> = [];
@@ -37,15 +37,15 @@ export default defineBackground(() => {
         randomEntry = getRandomElement(dictionary);
         trialCount++;
       } while ((!randomEntry || randomEntry?.displayCount >= settings.maxEntryDisplayCount) && trialCount < 3);
-      const activeTab = await browser.tabs.query({ active: true, currentWindow: true });
+      const activeTab = await environment.tabs.query({ active: true, currentWindow: true });
 
       console.log({ activeTab });
       if (!activeTab || activeTab.length === 0) {
         if (settings.enableNotifications) {
-          browser.notifications.create({
+          environment.notifications.create({
             type: 'basic',
             iconUrl: 'icon.png',
-            title: 'Learn with Parrot',
+            title: 'Parrotly',
             message: `Word: ${randomEntry.word}\nTranslation: ${randomEntry.translation}`,
           });
         } else {
@@ -53,7 +53,7 @@ export default defineBackground(() => {
         }
         // show notification
       } else {
-        browser.tabs.sendMessage(
+        environment.tabs.sendMessage(
           activeTab[0].id,
           {
             settings,
@@ -114,34 +114,34 @@ export default defineBackground(() => {
     await storage.setItem<DictionaryEntry[]>(DICTIONARY_KEY, dictionary);
   }
 
-  browser.runtime.onInstalled.addListener(async () => {
+  environment.runtime.onInstalled.addListener(async () => {
     // set up
     await readFromStorage()
 
-    browser.contextMenus.create({
+    environment.contextMenus.create({
       id: displayNextEntryMenuId,
       title: "LWP display next entry",
       type: 'normal',
       contexts: ['page'],
     })
 
-    browser.contextMenus.create({
+    environment.contextMenus.create({
       id: contextMenuId,
-      title: "Learn with parrot",
+      title: "Parrotly",
       type: 'normal',
       contexts: ['selection'],
     })
 
-    browser.contextMenus.onClicked.addListener((info, tab) => {
+    environment.contextMenus.onClicked.addListener((info, tab) => {
       if (info.menuItemId === contextMenuId) {
-        browser.tabs.sendMessage(tab.id, { messageId: CONTEXT_MENU_CLICKED, word: info.selectionText, settings })
+        environment.tabs.sendMessage(tab.id, { messageId: CONTEXT_MENU_CLICKED, word: info.selectionText, settings })
       }
       if (info.menuItemId === displayNextEntryMenuId) {
         displayNextEntry()
       }
     });
 
-    browser.runtime.onMessage.addListener(
+    environment.runtime.onMessage.addListener(
       async (request, sender, sendResponse) => {
         console.log("received message");
         switch (request.messageId) {
@@ -161,10 +161,10 @@ export default defineBackground(() => {
       }
     );
 
-    browser.action.onClicked.addListener(async () => {
+    environment.action.onClicked.addListener(async () => {
       // Open the dashboard in a new tab
       console.log("Opening dashboard");
-      await browser.tabs.create({ url: 'dashboard.html' });
+      await environment.tabs.create({ url: 'dashboard.html' });
     });
   })
 });

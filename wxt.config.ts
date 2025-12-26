@@ -12,10 +12,11 @@ export default defineConfig({
     startUrls: ['https://www.google.com/search?q=wxt+extension']
   },
   manifest: ({ mode }) => ({
-    name: "Learn with parrot",
-    description: "Learn with parrot helps you revise the vocabulary of a language by periodically showing it to you as you browse the web.",
+    name: "Parrotly",
+    description: "Parrotly helps you revise the vocabulary of a language by periodically showing it to you as you browse the web.",
     permissions: [
       "storage",
+      "tabs",
       "activeTab",
       "notifications",
       "contextMenus",
@@ -25,6 +26,19 @@ export default defineConfig({
         "16": "icon/16.png",
         "48": "icon/48.png",
         "128": "icon/128.png"
+      }
+    },
+    browser_specific_settings: {
+      gecko: {
+        "id": "@example-data-collection-with-fallback",
+        "data_collection_permissions": {
+          "required": [
+             "locationInfo"
+          ],
+          "optional": [
+             "technicalAndInteraction"
+          ]
+         }
       }
     },
     web_accessible_resources: [

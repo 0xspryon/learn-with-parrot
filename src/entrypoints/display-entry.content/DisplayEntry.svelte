@@ -79,7 +79,7 @@
     <div class="relative w-full">
       <div class="bg-base-100 opacity-90 absolute h-full w-full -z-50"></div>
       <div class="w-full flex flex-col gap-4 p-4">
-        <h1 class="text-base-content">Learn with parrot</h1>
+        <h1 class="text-base-content">Parrotly</h1>
         <div
           class="div flex flex-col items-center justify-center text-base-content"
         >
@@ -107,7 +107,7 @@
       </div>
     </div>
   </section>
-{/if}a
+{/if}
 
 <style>
   .top-layer {

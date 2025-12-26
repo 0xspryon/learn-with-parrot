@@ -1,4 +1,4 @@
-import AddToDictionary from "./DisplayEntry.svelte";
+import DisplayEntry from "./DisplayEntry.svelte";
 import { mount, unmount } from "svelte";
 import "@/assets/tailwind.css";
 
@@ -12,7 +12,7 @@ export default defineContentScript({
       anchor: 'body', // Or a specific CSS selector
       onMount: (container) => {
         // Create the Svelte app inside the UI container
-        return mount(AddToDictionary, { target: container });
+        return mount(DisplayEntry, { target: container });
       },
       onRemove: (app: any) => {
         unmount(app);

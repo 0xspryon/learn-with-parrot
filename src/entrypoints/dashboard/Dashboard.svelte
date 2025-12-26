@@ -40,7 +40,7 @@
 
 <main class="p-4 flex flex-col gap-4 bg-base-100">
   <nav class="flex justify-between items-center">
-    <h1 class="text-2xl font-bold">Learn With Parrot</h1>
+    <h1 class="text-2xl font-bold">Parrotly</h1>
     <SettingsDialog>
       {#snippet trigger(openModal)}
         <button
