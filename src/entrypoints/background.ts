@@ -96,7 +96,6 @@ export default defineBackground(() => {
         if (newDictionary == undefined) {
           return
         }
-        console.log({ newDictionary });
         dictionary = newDictionary
       },
     );
@@ -114,9 +113,54 @@ export default defineBackground(() => {
     await storage.setItem<DictionaryEntry[]>(DICTIONARY_KEY, dictionary);
   }
 
-  environment.runtime.onInstalled.addListener(async () => {
-    // set up
-    await readFromStorage()
+  // set up
+  readFromStorage()
+    .then(() => {})
+
+  environment.contextMenus.onClicked.addListener((info, tab) => {
+    if (info.menuItemId === contextMenuId) {
+      environment.tabs.sendMessage(tab.id, { messageId: CONTEXT_MENU_CLICKED, word: info.selectionText, settings })
+    }
+    if (info.menuItemId === displayNextEntryMenuId) {
+      displayNextEntry()
+    }
+  });
+
+  environment.runtime.onMessage.addListener(
+    async (request, sender, sendResponse) => {
+      console.log("received message");
+      switch (request.messageId) {
+        case ADD_TO_DICTIONARY: {
+          const { word, translation } = request;
+          const entry: DictionaryEntry = {
+            word,
+            translation,
+            displayCount: 0,
+            quizDisplayCount: 0,
+            id: crypto.randomUUID(),
+          };
+          await saveDictionaryEntry(entry)
+          break
+        }
+      }
+    }
+  );
+
+  environment.action.onClicked.addListener(async () => {
+    // Open the dashboard in a new tab
+    console.log("Opening dashboard");
+    await environment.tabs.create({ url: 'dashboard.html' });
+  });
+
+  environment.runtime.onInstalled.addListener(async (details) => {
+    saveDictionaryEntry({
+      word: "Learn vocabulary",
+      translation: "Apprendre le vocabulaire",
+      id: crypto.randomUUID(),
+      displayCount: 0,
+      quizDisplayCount: 0,
+    })
+
 
     environment.contextMenus.create({
       id: displayNextEntryMenuId,
@@ -131,40 +175,8 @@ export default defineBackground(() => {
       type: 'normal',
       contexts: ['selection'],
     })
-
-    environment.contextMenus.onClicked.addListener((info, tab) => {
-      if (info.menuItemId === contextMenuId) {
-        environment.tabs.sendMessage(tab.id, { messageId: CONTEXT_MENU_CLICKED, word: info.selectionText, settings })
-      }
-      if (info.menuItemId === displayNextEntryMenuId) {
-        displayNextEntry()
-      }
-    });
-
-    environment.runtime.onMessage.addListener(
-      async (request, sender, sendResponse) => {
-        console.log("received message");
-        switch (request.messageId) {
-          case ADD_TO_DICTIONARY: {
-            const { word, translation } = request;
-            const entry: DictionaryEntry = {
-              word,
-              translation,
-              displayCount: 0,
-              quizDisplayCount: 0,
-              id: crypto.randomUUID(),
-            };
-            await saveDictionaryEntry(entry)
-            break
-          }
-        }
-      }
-    );
-
-    environment.action.onClicked.addListener(async () => {
-      // Open the dashboard in a new tab
-      console.log("Opening dashboard");
-      await environment.tabs.create({ url: 'dashboard.html' });
-    });
+    if (details.reason === 'install') {
+      await environment.tabs.create({ url: 'dashboard.html?firstInstall' });
+    }
   })
 });

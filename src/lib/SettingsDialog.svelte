@@ -23,13 +23,13 @@
     closeModal();
   }
 
-  function openModal() {
+  export function openModal() {
     if (modal) {
       modal.showModal();
     }
   }
 
-  function closeModal() {
+  export function closeModal() {
     if (modal) {
       modal.close();
     }
@@ -128,15 +128,13 @@
             </select>
             <p class="label">The language you wish to learn</p>
           </fieldset>
-          <fieldset class="fieldset pt-2">
-            <label class="label">
-              <input type="checkbox" checked="checked" class="checkbox" />
-              Enable notifications
-            </label>
-          </fieldset>
         </div>
         <div class="modal-action">
-          <button class="btn" type="button">Close</button>
+          <button
+            class="btn"
+            type="button"
+            onclick={closeModal}
+          >Close</button>
           <button class="btn" type="submit">save</button>
         </div>
       </form>

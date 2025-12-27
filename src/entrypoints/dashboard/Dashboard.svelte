@@ -10,6 +10,7 @@
   import TrashIcon from "@/lib/icons/trash-icon.svelte";
 
   let dictionary = $state<DictionaryEntry[]>(defaultDictionary);
+  let settingsDialog: SettingsDialog
 
   async function readState() {
     dictionary =
@@ -20,7 +21,6 @@
       if (newDictionary == null) {
         newDictionary = defaultDictionary;
       }
-      console.log({ newDictionary });
       dictionary = newDictionary;
     });
   }
@@ -35,13 +35,20 @@
 
   onMount(() => {
     readState();
+
+    const url = new URL(window.location.href);
+    let firstInstall = url.searchParams.get('firstInstall');
+    console.log('firstInstall:', firstInstall);
+    if (firstInstall != undefined) {
+      settingsDialog.openModal()
+    }
   });
 </script>
 
 <main class="p-4 flex flex-col gap-4 bg-base-100">
   <nav class="flex justify-between items-center">
     <h1 class="text-2xl font-bold">Parrotly</h1>
-    <SettingsDialog>
+    <SettingsDialog bind:this={settingsDialog}>
       {#snippet trigger(openModal)}
         <button
           class="btn btn-square btn-ghost text-base-content"
