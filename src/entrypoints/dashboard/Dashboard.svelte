@@ -13,10 +13,7 @@
   let settingsDialog: SettingsDialog
 
   async function readState() {
-    dictionary =
-      (await storage.getItem<DictionaryEntry[]>(DICTIONARY_KEY)) ??
-      // defaultDictionary;
-      console.log({ dictionary });
+    dictionary = await storage.getItem<DictionaryEntry[]>(DICTIONARY_KEY) ?? defaultDictionary;
     storage.watch<DictionaryEntry[]>(DICTIONARY_KEY, (newDictionary) => {
       if (newDictionary == null) {
         newDictionary = defaultDictionary;
@@ -49,7 +46,7 @@
   <nav class="flex justify-between items-center">
     <h1 class="text-2xl font-bold">Parrotly</h1>
     <SettingsDialog bind:this={settingsDialog}>
-      {#snippet trigger(openModal)}
+      {#snippet trigger(openModal: () => void)}
         <button
           class="btn btn-square btn-ghost text-base-content"
           onclick={openModal}

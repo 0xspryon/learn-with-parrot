@@ -161,7 +161,6 @@ export default defineBackground(() => {
       quizDisplayCount: 0,
     })
 
-
     environment.contextMenus.create({
       id: displayNextEntryMenuId,
       title: "LWP display next entry",
@@ -177,6 +176,8 @@ export default defineBackground(() => {
     })
     if (details.reason === 'install') {
       await environment.tabs.create({ url: 'dashboard.html?firstInstall' });
+      await storage.setItem<Settings>(SETTINGS_KEY, defaultSettings);
+      settings = defaultSettings
     }
   })
 });
