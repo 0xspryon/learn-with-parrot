@@ -11,7 +11,6 @@
   let open = $state(false);
   let word = $state("");
   let translation = $state("");
-  let language = $state("en");
   let settings = $state<Settings | null>(null);
   let loading = $state(false);
   let playing = $state(false);

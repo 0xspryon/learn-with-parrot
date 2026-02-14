@@ -13,7 +13,7 @@ export type DisplaySettings = Pick<Settings, 'learnedLanguage' | 'displayInterva
 export const defaultSettings: Settings = {
   maxEntryDisplayCount: 50,
   maxQuizDisplayCount: 50,
-  displayIntervalSeconds: 1 * 60,
+  displayIntervalSeconds: 30 * 60,
   nativeLanguage: 'en',
   learnedLanguage: 'fr',
   enableNotifications: true,

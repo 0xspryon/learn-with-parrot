@@ -13,9 +13,9 @@ export default defineBackground(() => {
   let environment = browser || chrome;
   const contextMenuId = "learn-with-parrot-context-menu";
   const displayNextEntryMenuId = "display-next-entry-menu";
+  const displayAlarmName = "parrotly-display-entry-alarm";
   let dictionary: Array<DictionaryEntry> = [];
   let settings: Settings
-  let displayIntervalTimeout: NodeJS.Timeout | undefined;
 
   // Do not call this method with an empty array, it will return undefined.
   function getRandomElement<T>(arr: T[]): T {
@@ -44,7 +44,7 @@ export default defineBackground(() => {
         if (settings.enableNotifications) {
           environment.notifications.create({
             type: 'basic',
-            iconUrl: 'icon.png',
+            iconUrl: 'learn-with-parrot.png',
             title: 'Parrotly',
             message: `Word: ${randomEntry.word}\nTranslation: ${randomEntry.translation}`,
           });
@@ -67,12 +67,20 @@ export default defineBackground(() => {
     }
   }
 
-  function setupDisplayNextEntry(settings: Settings) {
-    clearInterval(displayIntervalTimeout);
-    displayIntervalTimeout = setInterval(
-      displayNextEntry,
-      settings.displayIntervalSeconds * 1000,
-    )
+  async function setupDisplayNextEntry(settings: Settings) {
+    // Clear any existing alarm
+    await environment.alarms.clear(displayAlarmName);
+
+    // Create a new alarm with the configured interval
+    // Note: Chrome alarms minimum is 1 minute for packed extensions
+    const intervalInMinutes = settings.displayIntervalSeconds / 60;
+
+    await environment.alarms.create(displayAlarmName, {
+      periodInMinutes: intervalInMinutes,
+      delayInMinutes: intervalInMinutes
+    });
+
+    console.log(`Alarm set to trigger every ${intervalInMinutes} minutes`);
   }
 
   async function readFromStorage() {
@@ -113,9 +121,13 @@ export default defineBackground(() => {
     await storage.setItem<DictionaryEntry[]>(DICTIONARY_KEY, dictionary);
   }
 
-  // set up
-  readFromStorage()
-    .then(() => {})
+  // Listen for alarm events
+  environment.alarms.onAlarm.addListener((alarm) => {
+    console.log(`Alarm triggered: ${alarm.name}`);
+    if (alarm.name === displayAlarmName) {
+      displayNextEntry();
+    }
+  });
 
   environment.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === contextMenuId) {
@@ -175,9 +187,13 @@ export default defineBackground(() => {
       contexts: ['selection'],
     })
     if (details.reason === 'install') {
-      await environment.tabs.create({ url: 'dashboard.html?firstInstall' });
       await storage.setItem<Settings>(SETTINGS_KEY, defaultSettings);
       settings = defaultSettings
+      await environment.tabs.create({ url: 'dashboard.html?firstInstall' });
     }
   })
+
+  // set up
+  readFromStorage()
+    .then(() => {})
 });

@@ -80,6 +80,7 @@
             <input
               class="input w-full"
               type="number"
+              min={5 * 60}
               bind:value={settings.displayIntervalSeconds}
             />
             <p class="label">

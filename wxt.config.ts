@@ -20,6 +20,7 @@ export default defineConfig({
       "activeTab",
       "notifications",
       "contextMenus",
+      "alarms",
     ],
     action: {
       default_icon: {
