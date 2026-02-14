@@ -41,17 +41,16 @@ export default defineBackground(() => {
 
       console.log({ activeTab });
       if (!activeTab || activeTab.length === 0) {
-        if (settings.enableNotifications) {
-          environment.notifications.create({
-            type: 'basic',
-            iconUrl: 'learn-with-parrot.png',
-            title: 'Parrotly',
-            message: `Word: ${randomEntry.word}\nTranslation: ${randomEntry.translation}`,
-          });
-        } else {
+        if (!settings.enableNotifications) {
           return
         }
         // show notification
+        environment.notifications.create({
+          type: 'basic',
+          iconUrl: environment.runtime.getURL('/learn-with-parrot.png'),
+          title: 'Parrotly',
+          message: `Word: ${randomEntry.word}\nTranslation: ${randomEntry.translation}`,
+        });
       } else {
         environment.tabs.sendMessage(
           activeTab[0].id,
@@ -195,5 +194,5 @@ export default defineBackground(() => {
 
   // set up
   readFromStorage()
-    .then(() => {})
+    .then(() => { })
 });
