@@ -79,26 +79,26 @@
     <div class="relative w-full">
       <div class="bg-base-100 opacity-90 absolute h-full w-full -z-50"></div>
       <div class="w-full flex flex-col gap-4 p-4">
-        <h1 class="text-base-content">Parrotly</h1>
+        <h1 class="text-base-content text-[16px]">Parrotly</h1>
         <div
           class="div flex flex-col items-center justify-center text-base-content"
         >
-          <span class="text-base-content text-2xl font-bold">{entry?.word}</span
+          <span class="text-base-content text-[24px] font-bold">{entry?.word}</span
           >
-          <span class="text-base-content text-2xl font-bold">-</span>
-          <span class="text-base-content text-2xl font-bold"
+          <span class="text-base-content text-[24px] font-bold">-</span>
+          <span class="text-base-content text-[24px] font-bold"
             >{entry?.translation}</span
           >
         </div>
         <div class="w-full flex justify-end gap-4">
           <button
-            class="btn btn-square btn-ghost text-base-content"
+            class="btn btn-square btn-ghost text-base-content w-[58px] h-[40px]"
             onclick={playWord}
           >
             <VolumeDownIcon class="relative left-1" />
           </button>
           <button
-            class="btn btn-square btn-ghost text-base-content"
+            class="btn btn-square btn-ghost text-base-content w-[58px] h-[40px]"
             onclick={closeDialog}
           >
             <TimesIcon />
@@ -111,6 +111,6 @@
 
 <style>
   .top-layer {
-    z-index: 1000;
+    z-index: 10000;
   }
 </style>

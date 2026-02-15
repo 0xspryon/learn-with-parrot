@@ -163,7 +163,6 @@
             word = request.word;
             translation = request.translation;
             settings = request.settings;
-            language = request.learnedLanguage;
             open = true;
             // schedule positioning of the dialog in next microtask
             setTimeout(() => {
@@ -199,16 +198,16 @@
 />
 {#if open}
   <div class="modal no-backdrop" role="dialog">
-    <div class="modal-box max-w-sm absolute shadow" bind:this={wrapper}>
-      <h3 class="text-lg text-base-content font-bold">Parrotly</h3>
+    <div class="modal-box p-[24px] max-w-[384px] h-[260px] absolute shadow" bind:this={wrapper}>
+      <h3 class="text-[18px] text-base-content font-bold">Parrotly</h3>
       <form class="contents" onsubmit={handleSubmit}>
-        <div class="flex flex-col gap-3 pt-3">
+        <div class="flex flex-col gap-[16px] pt-[16px]">
           <fieldset class="fieldset">
             <!-- <legend class="fieldset-legend">Word</legend> -->
             <input
               required
               type="text"
-              class="input w-full text-base-content"
+              class="input w-full text-base-content text-[14px] h-[40px]"
               bind:value={word}
             />
           </fieldset>
@@ -217,15 +216,15 @@
             <input
               required
               type="text"
-              class="input w-full text-base-content"
+              class="input w-full text-base-content text-[14px] h-[40px]"
               bind:value={translation}
               oninput={abortTranslation}
             />
           </fieldset>
         </div>
-        <div class="modal-action">
+        <div class="modal-action mt-[16px]">
           <button
-            class="btn btn-ghost text-base-content"
+            class="btn btn-ghost text-base-content h-[40px] w-[58px]"
             type="button"
             onclick={playWord}
           >
@@ -235,7 +234,7 @@
               <VolumeDownIcon class="relative left-1" />
             {/if}
           </button>
-          <button class="btn btn-ghost text-base-content">
+          <button class="btn btn-ghost text-base-content h-[40px] w-[58px]">
             {#if loading}
               <span class="loading loading-dots loading-sm"></span>
             {:else}

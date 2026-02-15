@@ -130,7 +130,13 @@ export default defineBackground(() => {
 
   environment.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === contextMenuId) {
-      environment.tabs.sendMessage(tab.id, { messageId: CONTEXT_MENU_CLICKED, word: info.selectionText, settings })
+      environment.tabs.sendMessage(
+        tab.id,
+        {
+          messageId: CONTEXT_MENU_CLICKED,
+          word: info.selectionText,
+          settings,
+        })
     }
     if (info.menuItemId === displayNextEntryMenuId) {
       displayNextEntry()
