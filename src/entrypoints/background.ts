@@ -67,13 +67,18 @@ export default defineBackground(() => {
   }
 
   async function setupDisplayNextEntry(settings: Settings) {
+    const existingAlarm = await environment.alarms.get(displayAlarmName);
+    const intervalInMinutes = settings.displayIntervalSeconds / 60;
+    if (existingAlarm && existingAlarm.periodInMinutes === intervalInMinutes) {
+      console.log(`Alarm already exists with correct interval: ${intervalInMinutes} minutes`);
+      return;
+    }
+
     // Clear any existing alarm
     await environment.alarms.clear(displayAlarmName);
 
     // Create a new alarm with the configured interval
     // Note: Chrome alarms minimum is 1 minute for packed extensions
-    const intervalInMinutes = settings.displayIntervalSeconds / 60;
-
     await environment.alarms.create(displayAlarmName, {
       periodInMinutes: intervalInMinutes,
       delayInMinutes: intervalInMinutes
