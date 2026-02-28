@@ -203,6 +203,10 @@ export default defineBackground(() => {
     }
   })
 
+  environment.runtime.onStartup.addListener(async () => {
+    readFromStorage()
+      .then(() => { })
+  })
   // set up
   readFromStorage()
     .then(() => { })
