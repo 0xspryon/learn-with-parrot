@@ -106,6 +106,7 @@ export default defineBackground(() => {
       DICTIONARY_KEY,
       (newDictionary) => {
         if (newDictionary == undefined) {
+          dictionary = []
           return
         }
         dictionary = newDictionary
@@ -125,11 +126,55 @@ export default defineBackground(() => {
     await storage.setItem<DictionaryEntry[]>(DICTIONARY_KEY, dictionary);
   }
 
+  async function handleOnInstall() {
+    saveDictionaryEntry({
+      word: "Learn vocabulary",
+      translation: "Vokabeln lernen",
+      id: crypto.randomUUID(),
+      displayCount: 0,
+      quizDisplayCount: 0,
+    })
+
+    saveDictionaryEntry({
+      word: "Learn vocabulary",
+      translation: "Apprendre le vocabulaire",
+      id: crypto.randomUUID(),
+      displayCount: 0,
+      quizDisplayCount: 0,
+    })
+
+    environment.contextMenus.create({
+      id: displayNextEntryMenuId,
+      title: "LWP display next entry",
+      type: 'normal',
+      contexts: ['page'],
+    })
+
+    environment.contextMenus.create({
+      id: contextMenuId,
+      title: "Parrotly",
+      type: 'normal',
+      contexts: ['selection'],
+    })
+    await storage.setItem<Settings>(SETTINGS_KEY, defaultSettings);
+    settings = defaultSettings
+    await environment.tabs.create({ url: 'dashboard.html?firstInstall' });
+  }
+
+  environment.runtime.onStartup.addListener(async () => {
+    await readFromStorage()
+  })
+
   // Listen for alarm events
   environment.alarms.onAlarm.addListener((alarm) => {
     console.log(`Alarm triggered: ${alarm.name}`);
-    if (alarm.name === displayAlarmName) {
-      displayNextEntry();
+    switch (alarm.name) {
+      case displayAlarmName:
+        displayNextEntry();
+        break;
+      default: {
+        break;
+      }
     }
   });
 
@@ -175,39 +220,17 @@ export default defineBackground(() => {
   });
 
   environment.runtime.onInstalled.addListener(async (details) => {
-    saveDictionaryEntry({
-      word: "Learn vocabulary",
-      translation: "Apprendre le vocabulaire",
-      id: crypto.randomUUID(),
-      displayCount: 0,
-      quizDisplayCount: 0,
-    })
-
-    environment.contextMenus.create({
-      id: displayNextEntryMenuId,
-      title: "LWP display next entry",
-      type: 'normal',
-      contexts: ['page'],
-    })
-
-    environment.contextMenus.create({
-      id: contextMenuId,
-      title: "Parrotly",
-      type: 'normal',
-      contexts: ['selection'],
-    })
-    if (details.reason === 'install') {
-      await storage.setItem<Settings>(SETTINGS_KEY, defaultSettings);
-      settings = defaultSettings
-      await environment.tabs.create({ url: 'dashboard.html?firstInstall' });
+    switch (details.reason) {
+      case 'install':
+        await handleOnInstall()
+        break
+      default: {
+        break;
+      }
     }
   })
 
-  environment.runtime.onStartup.addListener(async () => {
-    readFromStorage()
-      .then(() => { })
-  })
-  // set up
-  readFromStorage()
-    .then(() => { })
+  // // set up
+  // readFromStorage()
+  //   .then(() => { })
 });
