@@ -126,8 +126,8 @@ export default defineBackground(() => {
     await storage.setItem<DictionaryEntry[]>(DICTIONARY_KEY, dictionary);
   }
 
-  async function handleOnInstall() {
-    saveDictionaryEntry({
+  async function saveInitialDictionaryEntries() {
+    await saveDictionaryEntry({
       word: "Learn vocabulary",
       translation: "Vokabeln lernen",
       id: crypto.randomUUID(),
@@ -135,14 +135,17 @@ export default defineBackground(() => {
       quizDisplayCount: 0,
     })
 
-    saveDictionaryEntry({
+    await saveDictionaryEntry({
       word: "Learn vocabulary",
       translation: "Apprendre le vocabulaire",
       id: crypto.randomUUID(),
       displayCount: 0,
       quizDisplayCount: 0,
     })
+  }
 
+  async function createContextMenus() {
+    await environment.contextMenus.removeAll()
     environment.contextMenus.create({
       id: displayNextEntryMenuId,
       title: "LWP display next entry",
@@ -156,6 +159,11 @@ export default defineBackground(() => {
       type: 'normal',
       contexts: ['selection'],
     })
+  }
+
+  async function handleOnInstall() {
+    await saveInitialDictionaryEntries()
+    await createContextMenus()
     await storage.setItem<Settings>(SETTINGS_KEY, defaultSettings);
     settings = defaultSettings
     await environment.tabs.create({ url: 'dashboard.html?firstInstall' });
@@ -221,6 +229,9 @@ export default defineBackground(() => {
 
   environment.runtime.onInstalled.addListener(async (details) => {
     switch (details.reason) {
+      case 'update':
+        await createContextMenus()
+        break
       case 'install':
         await handleOnInstall()
         break
