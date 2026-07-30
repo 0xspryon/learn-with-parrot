@@ -162,6 +162,9 @@ export default defineBackground(() => {
   }
 
   async function handleOnInstall() {
+    // Nothing is persisted yet on a fresh install, so ignore the in-memory
+    // defaultDictionary fallback and seed storage from a clean slate.
+    dictionary = []
     await saveInitialDictionaryEntries()
     await createContextMenus()
     await storage.setItem<Settings>(SETTINGS_KEY, defaultSettings);
@@ -169,12 +172,15 @@ export default defineBackground(() => {
     await environment.tabs.create({ url: 'dashboard.html?firstInstall' });
   }
 
-  environment.runtime.onStartup.addListener(async () => {
-    await readFromStorage()
-  })
+  // The event page is torn down after ~30s of inactivity and re-created from
+  // scratch on the next event, so state must be reloaded on every
+  // instantiation — and every handler must await it, because the event that
+  // woke the page is dispatched before the storage read resolves.
+  const ready = readFromStorage();
 
   // Listen for alarm events
-  environment.alarms.onAlarm.addListener((alarm) => {
+  environment.alarms.onAlarm.addListener(async (alarm) => {
+    await ready;
     console.log(`Alarm triggered: ${alarm.name}`);
     switch (alarm.name) {
       case displayAlarmName:
@@ -186,7 +192,8 @@ export default defineBackground(() => {
     }
   });
 
-  environment.contextMenus.onClicked.addListener((info, tab) => {
+  environment.contextMenus.onClicked.addListener(async (info, tab) => {
+    await ready;
     if (info.menuItemId === contextMenuId) {
       environment.tabs.sendMessage(
         tab.id,
@@ -203,6 +210,7 @@ export default defineBackground(() => {
 
   environment.runtime.onMessage.addListener(
     async (request, sender, sendResponse) => {
+      await ready;
       console.log("received message");
       switch (request.messageId) {
         case ADD_TO_DICTIONARY: {
@@ -228,6 +236,7 @@ export default defineBackground(() => {
   });
 
   environment.runtime.onInstalled.addListener(async (details) => {
+    await ready;
     switch (details.reason) {
       case 'update':
         await createContextMenus()
@@ -240,8 +249,4 @@ export default defineBackground(() => {
       }
     }
   })
-
-  // // set up
-  // readFromStorage()
-  //   .then(() => { })
 });

@@ -4,6 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 // See https://wxt.dev/api/config.html
 export default defineConfig({
   srcDir: 'src',
+  manifestVersion: 3,
   modules: ['@wxt-dev/module-svelte'],
   vite: () => ({
     plugins: [tailwindcss()],
@@ -34,12 +35,12 @@ export default defineConfig({
         "id": "@example-data-collection-with-fallback",
         "data_collection_permissions": {
           "required": [
-             "locationInfo"
+            "locationInfo"
           ],
           "optional": [
-             "technicalAndInteraction"
+            "technicalAndInteraction"
           ]
-         }
+        }
       }
     },
     web_accessible_resources: [
