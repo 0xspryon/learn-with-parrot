@@ -12,7 +12,7 @@ export default defineConfig({
   runner: {
     startUrls: ['https://www.google.com/search?q=wxt+extension']
   },
-  manifest: ({ mode }) => ({
+  manifest: ({ mode, browser }) => ({
     name: "Parrotly",
     description: "Parrotly helps you revise the vocabulary of a language by periodically showing it to you as you browse the web.",
     permissions: [
@@ -30,19 +30,21 @@ export default defineConfig({
         "128": "icon/128.png"
       }
     },
-    browser_specific_settings: {
-      gecko: {
-        "id": "@example-data-collection-with-fallback",
-        "data_collection_permissions": {
-          "required": [
-            "locationInfo"
-          ],
-          "optional": [
-            "technicalAndInteraction"
-          ]
+    ...(browser === 'firefox' && {
+      browser_specific_settings: {
+        gecko: {
+          "id": "{0d82f990-b5f5-4bf9-b956-068d71a4824e}",
+          "data_collection_permissions": {
+            "required": [
+              "locationInfo"
+            ],
+            "optional": [
+              "technicalAndInteraction"
+            ]
+          }
         }
       }
-    },
+    }),
     web_accessible_resources: [
       {
         resources: ["dashboard.html"],
